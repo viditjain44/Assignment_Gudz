@@ -58,6 +58,28 @@ export default async (req: any, res: any) => {
     return;
   }
 
+  // Test DB connection with short timeout
+  if (req.url === '/test-db') {
+    try {
+      const { MongoClient } = await import('mongodb');
+      const client = new MongoClient(process.env.MONGODB_URI as string, {
+        serverSelectionTimeoutMS: 3000,
+        connectTimeoutMS: 3000,
+      });
+      await client.connect();
+      await client.db('technician-booking').command({ ping: 1 });
+      await client.close();
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ status: 'ok', message: 'MongoDB connected successfully' }));
+    } catch (error: any) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ status: 'error', message: error.message }));
+    }
+    return;
+  }
+
   try {
     await initializeApp();
   } catch (error: any) {
