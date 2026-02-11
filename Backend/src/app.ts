@@ -20,14 +20,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Handle OPTIONS preflight for auth routes explicitly
-app.options("/api/auth/*", cors(corsOptions));
+app.options("/api/auth/{*path}", cors(corsOptions));
 
 // Mount BetterAuth handler BEFORE express.json()
 // BetterAuth handles its own body parsing
 if (auth) {
-  app.all("/api/auth/*", toNodeHandler(auth));
+  app.all("/api/auth/{*path}", toNodeHandler(auth));
 } else {
-  app.all("/api/auth/*", (req, res) => {
+  app.all("/api/auth/{*path}", (req, res) => {
     res.status(500).json({ error: "Auth not configured - missing environment variables" });
   });
 }
