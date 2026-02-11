@@ -1,24 +1,25 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { MongoClient } from "mongodb";
+import { MongoClient, Db } from "mongodb";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-// Cached MongoDB client for serverless
-let cachedClient: MongoClient | null = null;
+// Single MongoDB client for serverless - reused across requests
+const mongoClient = new MongoClient(process.env.MONGODB_URI as string, {
+  serverSelectionTimeoutMS: 5000,
+  connectTimeoutMS: 10000,
+});
 
-function getMongoClient(): MongoClient {
-  if (!cachedClient) {
-    cachedClient = new MongoClient(process.env.MONGODB_URI as string, {
-      serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 10000,
-    });
+let isConnected = false;
+
+export async function connectAuthDB(): Promise<Db> {
+  if (!isConnected) {
+    await mongoClient.connect();
+    isConnected = true;
   }
-  return cachedClient;
+  return mongoClient.db("technician-booking");
 }
-
-const mongoClient = getMongoClient();
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET as string,

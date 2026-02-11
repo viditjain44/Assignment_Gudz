@@ -1,6 +1,7 @@
 import serverless from "serverless-http";
 import app from "./app.js";
 import { connectDB } from "./config/db.js";
+import { connectAuthDB } from "./lib/auth.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -14,7 +15,10 @@ const connectOnce = async () => {
   if (connectionError) throw connectionError;
   
   try {
-    await connectDB();
+    await Promise.all([
+      connectDB(),
+      connectAuthDB()
+    ]);
     isConnected = true;
   } catch (error) {
     connectionError = error as Error;
