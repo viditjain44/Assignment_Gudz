@@ -11,7 +11,7 @@ const app = express();
 
 // CORS configuration - must be before routes
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3000","https://assignment-gudz-53s7.vercel.app/", process.env.FRONTEND_URL|| ""].filter(Boolean),
+  origin: ["http://localhost:5173", "http://localhost:3000", "https://assignment-gudz-53s7.vercel.app", process.env.FRONTEND_URL || ""].filter(Boolean),
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
