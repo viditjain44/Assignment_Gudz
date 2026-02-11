@@ -58,6 +58,42 @@ export default async (req: any, res: any) => {
     return;
   }
 
+  // Test initialization steps
+  if (req.url === '/test-init') {
+    const steps: string[] = [];
+    try {
+      steps.push('Starting...');
+      
+      const { MongoClient } = await import('mongodb');
+      steps.push('MongoDB module loaded');
+      
+      const mongoose = await import('mongoose');
+      steps.push('Mongoose module loaded');
+      
+      await mongoose.default.connect(process.env.MONGODB_URI as string, {
+        serverSelectionTimeoutMS: 3000,
+        connectTimeoutMS: 3000,
+      });
+      steps.push('Mongoose connected');
+      
+      const authModule = await import('./lib/auth.js');
+      steps.push('Auth module loaded');
+      steps.push('Auth exists: ' + !!authModule.auth);
+      
+      const appModule = await import('./app.js');
+      steps.push('App module loaded');
+      
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ status: 'ok', steps }));
+    } catch (error: any) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ status: 'error', steps, error: error.message }));
+    }
+    return;
+  }
+
   // Test DB connection with short timeout
   if (req.url === '/test-db') {
     try {
