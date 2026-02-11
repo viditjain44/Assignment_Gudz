@@ -51,12 +51,29 @@ export const updateProfile = async (
     }
 
     // Use BetterAuth's API to update the user
+    // const result = await auth.api.updateUser({
+    //   headers: fromNodeHeaders(req.headers),
+    //   body: {
+    //     name: name.trim(),
+    //   },
+    // });
     const result = await auth.api.updateUser({
-      headers: fromNodeHeaders(req.headers),
-      body: {
-        name: name.trim(),
-      },
-    });
+  headers: fromNodeHeaders(req.headers),
+  body: {
+    name: name.trim(),
+  },
+}) as {
+  status: boolean;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    emailVerified: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+};
+
 
     res.json({
       message: "Profile updated successfully",
