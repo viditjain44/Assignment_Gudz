@@ -10,16 +10,21 @@ dotenv.config();
 const app = express();
 
 // CORS configuration - must be before routes
-app.use(cors({
+const corsOptions = {
   origin: ["http://localhost:5173", "http://localhost:3000", "https://assignment-gudz-53s7.vercel.app", process.env.FRONTEND_URL || ""].filter(Boolean),
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-}));
+};
+
+app.use(cors(corsOptions));
+
+// Handle OPTIONS preflight for auth routes explicitly
+app.options("/api/auth/*", cors(corsOptions));
 
 // Mount BetterAuth handler BEFORE express.json()
 // BetterAuth handles its own body parsing
-app.all("/api/auth/{*path}", toNodeHandler(auth));
+app.all("/api/auth/*", toNodeHandler(auth));
 
 // JSON parsing for other routes
 app.use(express.json());
