@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link} from '@tanstack/react-router'
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
@@ -27,7 +27,7 @@ const SKILLS = [
 ]
 
 function RegisterTechnicianPage() {
-  const navigate = useNavigate()
+  //const navigate = useNavigate()
   const [isSuccess, setIsSuccess] = useState(false)
   
   const [formData, setFormData] = useState({

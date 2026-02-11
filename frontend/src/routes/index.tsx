@@ -25,7 +25,7 @@ function HomePage() {
             <Link to="/register-technician">
               <Button variant="ghost">Become a Technician</Button>
             </Link>
-            <Link to="/login">
+            <Link to="/login" search={{redirect: "/"}}>
               <Button variant="ghost">Login</Button>
             </Link>
             <Link to="/register">
@@ -53,7 +53,7 @@ function HomePage() {
                   Book a Technician
                 </Button>
               </Link>
-              <Link to="/login">
+              <Link to="/login" search={{redirect: "/"}}>
                 <Button variant="outline" size="lg">
                   View Dashboard
                 </Button>
