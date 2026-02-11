@@ -2,9 +2,41 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+let app: any = null;
+let serverless: any = null;
+let initError: Error | null = null;
+let isConnected = false;
+
+// Lazy initialization to catch errors
+async function initializeApp() {
+  if (app) return;
+  if (initError) throw initError;
+  
+  try {
+    const serverlessModule = await import("serverless-http");
+    serverless = serverlessModule.default;
+    
+    const appModule = await import("./app.js");
+    app = appModule.default;
+    
+    const dbModule = await import("./config/db.js");
+    await dbModule.connectDB();
+    
+    const authModule = await import("./lib/auth.js");
+    if (authModule.connectAuthDB) {
+      await authModule.connectAuthDB();
+    }
+    
+    isConnected = true;
+  } catch (error) {
+    initError = error as Error;
+    throw error;
+  }
+}
+
 // Export for Vercel serverless
 export default async (req: any, res: any) => {
-  // Debug endpoint to check env vars
+  // Debug endpoint - doesn't need initialization
   if (req.url === '/debug-env') {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
@@ -22,12 +54,23 @@ export default async (req: any, res: any) => {
   if (req.url === '/health-check') {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ status: 'ok' }));
+    res.end(JSON.stringify({ status: 'ok', initialized: !!app, connected: isConnected }));
     return;
   }
 
-  // For now, return error for other routes
-  res.statusCode = 503;
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify({ error: 'Service temporarily unavailable - debugging' }));
+  try {
+    await initializeApp();
+  } catch (error: any) {
+    res.statusCode = 503;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ 
+      error: 'Initialization failed', 
+      message: error.message,
+      stack: error.stack 
+    }));
+    return;
+  }
+  
+  const handler = serverless(app);
+  return handler(req, res);
 };
