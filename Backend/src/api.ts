@@ -7,17 +7,40 @@ dotenv.config();
 
 // Connect to MongoDB
 let isConnected = false;
+let connectionError: Error | null = null;
 
 const connectOnce = async () => {
-  if (!isConnected) {
+  if (isConnected) return;
+  if (connectionError) throw connectionError;
+  
+  try {
     await connectDB();
     isConnected = true;
+  } catch (error) {
+    connectionError = error as Error;
+    throw error;
   }
 };
 
 // Export for Vercel serverless
 export default async (req: any, res: any) => {
-  await connectOnce();
+  // Health check endpoint that doesn't need DB
+  if (req.url === '/health-check') {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ status: 'ok', db: isConnected }));
+    return;
+  }
+
+  try {
+    await connectOnce();
+  } catch (error: any) {
+    res.statusCode = 503;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ error: 'Database connection failed', message: error.message }));
+    return;
+  }
+  
   const handler = serverless(app);
   return handler(req, res);
 };
