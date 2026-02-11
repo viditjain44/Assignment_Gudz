@@ -60,6 +60,10 @@ export const registerTechnician = async (
     }
 
     // Create user account via BetterAuth API
+    if (!auth) {
+      res.status(500).json({ message: "Auth service not configured" });
+      return;
+    }
     const signUpResult = await auth.api.signUpEmail({
       body: {
         email: email.toLowerCase(),

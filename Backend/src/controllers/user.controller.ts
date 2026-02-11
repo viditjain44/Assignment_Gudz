@@ -51,12 +51,10 @@ export const updateProfile = async (
     }
 
     // Use BetterAuth's API to update the user
-    // const result = await auth.api.updateUser({
-    //   headers: fromNodeHeaders(req.headers),
-    //   body: {
-    //     name: name.trim(),
-    //   },
-    // });
+    if (!auth) {
+      res.status(500).json({ message: "Auth service not configured" });
+      return;
+    }
     const result = await auth.api.updateUser({
   headers: fromNodeHeaders(req.headers),
   body: {

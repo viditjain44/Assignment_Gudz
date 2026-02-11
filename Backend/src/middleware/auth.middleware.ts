@@ -24,6 +24,10 @@ export const requireAuth = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    if (!auth) {
+      res.status(500).json({ message: "Auth service not configured" });
+      return;
+    }
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
