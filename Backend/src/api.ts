@@ -36,6 +36,20 @@ export default async (req: any, res: any) => {
     return;
   }
 
+  // Debug endpoint to check env vars (remove in production)
+  if (req.url === '/debug-env') {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({
+      hasMongoUri: !!process.env.MONGODB_URI,
+      hasBetterAuthSecret: !!process.env.BETTER_AUTH_SECRET,
+      betterAuthUrl: process.env.BETTER_AUTH_URL,
+      frontendUrl: process.env.FRONTEND_URL,
+      nodeEnv: process.env.NODE_ENV,
+    }));
+    return;
+  }
+
   try {
     await connectOnce();
   } catch (error: any) {
