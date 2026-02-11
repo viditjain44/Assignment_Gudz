@@ -10,7 +10,7 @@
     {
       "src": "/api/(.*)",
       "methods": ["OPTIONS"],
-      "dest": "src/api.ts",
+      "status": 204,
       "headers": {
         "Access-Control-Allow-Origin": "https://assignment-gudz-53s7.vercel.app",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
@@ -20,7 +20,11 @@
     },
     {
       "src": "/(.*)",
-      "dest": "src/api.ts"
+      "dest": "src/api.ts",
+      "headers": {
+        "Access-Control-Allow-Origin": "https://assignment-gudz-53s7.vercel.app",
+        "Access-Control-Allow-Credentials": "true"
+      }
     }
   ],
   "env": {
