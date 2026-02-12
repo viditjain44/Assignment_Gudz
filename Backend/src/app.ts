@@ -5,12 +5,23 @@ import { toNodeHandler } from "better-auth/node";
 
 const app = express();
 
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  })
-);
+// CORS configuration
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://assignment-gudz-53s7.vercel.app",
+    process.env.FRONTEND_URL,
+  ].filter(Boolean) as string[],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight for all routes
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
@@ -36,8 +47,34 @@ app.get("/", (req, res) => {
   res.json({ message: "API is running", version: "1.0.0" });
 });
 
-// ✅ Proper Better Auth mounting (must use /api/auth/* for better-auth default)
-app.all("/api/auth/*", toNodeHandler(auth));
+// ✅ Proper Better Auth mounting with manual CORS (toNodeHandler bypasses Express middleware)
+const authHandler = toNodeHandler(auth);
+
+app.all("/api/auth/*", (req, res, next) => {
+  // Set CORS headers manually for auth routes
+  const origin = req.headers.origin;
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://assignment-gudz-53s7.vercel.app",
+    process.env.FRONTEND_URL,
+  ].filter(Boolean);
+
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Handle preflight
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  // Pass to Better Auth handler
+  return authHandler(req, res);
+});
 
 // Global error handler
 app.use((err: any, req: any, res: any, next: any) => {
