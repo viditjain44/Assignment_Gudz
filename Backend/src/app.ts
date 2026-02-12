@@ -3,6 +3,16 @@ import dotenv from "dotenv";
 dotenv.config();
 
 let app: any = null;
+import cors from "cors";
+
+app.use(
+  cors({
+    origin: "https://assignment-gudz-53s7.vercel.app",
+    credentials: true,
+  })
+);
+
+
 let serverlessHandler: any = null;
 let initError: Error | null = null;
 
