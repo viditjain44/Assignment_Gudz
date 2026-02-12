@@ -35,8 +35,8 @@ app.get("/", (req, res) => {
   res.json({ message: "API is running", version: "1.0.0" });
 });
 
-// Mount better-auth - use the Express adapter
-app.use("/api/auth", auth.handler as any);
+// Mount better-auth at root level, it will handle /api/auth internally
+app.use(auth.handler as any);
 
 // Global error handler
 app.use((err: any, req: any, res: any, next: any) => {

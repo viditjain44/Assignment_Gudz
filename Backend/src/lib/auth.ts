@@ -2,27 +2,27 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
 
-// Validate required environment variables
+// Get environment variables
 const MONGODB_URI = process.env.MONGODB_URI;
 const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET;
 const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL;
 
+console.log('[Auth] Environment check:');
+console.log('[Auth] MONGODB_URI:', MONGODB_URI ? 'SET' : 'NOT SET');
+console.log('[Auth] BETTER_AUTH_SECRET:', BETTER_AUTH_SECRET ? 'SET' : 'NOT SET');
+console.log('[Auth] BETTER_AUTH_URL:', BETTER_AUTH_URL || 'NOT SET');
+
 if (!MONGODB_URI) {
-  console.error("❌ MONGODB_URI environment variable is not set");
-  throw new Error("MONGODB_URI is required");
+  throw new Error("❌ MONGODB_URI environment variable is not set");
 }
 
 if (!BETTER_AUTH_SECRET) {
-  console.error("❌ BETTER_AUTH_SECRET environment variable is not set");
-  throw new Error("BETTER_AUTH_SECRET is required");
+  throw new Error("❌ BETTER_AUTH_SECRET environment variable is not set");
 }
 
 if (!BETTER_AUTH_URL) {
-  console.error("❌ BETTER_AUTH_URL environment variable is not set");
-  throw new Error("BETTER_AUTH_URL is required");
+  throw new Error("❌ BETTER_AUTH_URL environment variable is not set");
 }
-
-console.log('[Auth] Initializing with baseURL:', BETTER_AUTH_URL);
 
 // Single MongoDB client for better-auth (lazy connection)
 const mongoClient = new MongoClient(MONGODB_URI, {
@@ -32,16 +32,18 @@ const mongoClient = new MongoClient(MONGODB_URI, {
   minPoolSize: 1,
 });
 
-// Create auth instance
+// Create auth instance with explicit baseURL
 export const auth = betterAuth({
   secret: BETTER_AUTH_SECRET,
-  baseURL: BETTER_AUTH_URL, // This MUST be the full URL
-  basePath: "/api/auth",
+  baseURL: BETTER_AUTH_URL,
   
   trustedOrigins: [
     "http://localhost:5173",
-    "http://localhost:3000",
+    "http://localhost:3000", 
+    "http://localhost:5000",
     "https://assignment-gudz-53s7.vercel.app",
+    "https://assignment-gudz-oqe8.vercel.app",
+    BETTER_AUTH_URL,
     process.env.FRONTEND_URL || ""
   ].filter(Boolean),
 
@@ -77,6 +79,6 @@ export const auth = betterAuth({
   },
 });
 
-console.log('✅ Better Auth initialized');
+console.log('✅ Better Auth initialized with baseURL:', BETTER_AUTH_URL);
 
 export { mongoClient };
