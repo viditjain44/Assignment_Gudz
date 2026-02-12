@@ -64,7 +64,8 @@ function RegisterPage() {
           title: 'Account created!',
           description: 'Your account has been created successfully.',
         })
-        navigate({ to: '/dashboard' })
+        // Use hard redirect to ensure session cookie is picked up
+        window.location.href = '/dashboard'
       }
     } catch (error) {
       toast({

@@ -42,12 +42,13 @@ function LoginPage() {
           description: result.error,
           variant: 'destructive',
         })
-      } else {
+    } else {
         toast({
           title: 'Welcome back!',
           description: 'You have successfully logged in.',
         })
-        navigate({ to: redirectTo })
+        // Use hard redirect to ensure session cookie is picked up
+        window.location.href = redirectTo
       }
     } catch (error) {
       toast({
