@@ -46,11 +46,12 @@ app.get("/", (req, res) => {
   res.json({ message: "API is running", version: "1.0.0" });
 });
 
-// ✅ Proper Better Auth mounting with manual CORS (toNodeHandler bypasses Express middleware)
+// ✅ Better Auth mounting with manual CORS
 const authHandler = toNodeHandler(auth);
 
-app.all("/api/auth/:path(*)", (req, res, next) => {
-  // Set CORS headers manually for auth routes
+// Middleware for auth routes - handles CORS and passes to Better Auth
+app.use("/api/auth", (req, res, next) => {
+  // Set CORS headers manually (toNodeHandler bypasses Express middleware)
   const origin = req.headers.origin;
   const allowedOrigins = [
     "http://localhost:5173",
