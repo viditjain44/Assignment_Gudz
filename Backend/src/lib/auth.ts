@@ -140,6 +140,19 @@ export const auth = betterAuth({
   trustedOrigins,
   database: mongodbAdapter(mongoClient.db("technician-booking")),
 
+  // Cross-origin cookie settings for separate frontend/backend domains
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: false, // Different domains, not subdomains
+    },
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
+      httpOnly: true,
+      path: "/",
+    },
+  },
+
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
