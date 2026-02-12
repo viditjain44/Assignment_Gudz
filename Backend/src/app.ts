@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
+import routes from "./routes/index.js";
 
 const app = express();
 
@@ -75,6 +76,9 @@ app.use("/api/auth", (req, res, next) => {
   // Pass to Better Auth handler
   return authHandler(req, res);
 });
+
+// API routes (technicians, bookings, users)
+app.use("/api", routes);
 
 // Global error handler
 app.use((err: any, req: any, res: any, next: any) => {
