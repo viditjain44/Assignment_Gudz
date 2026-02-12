@@ -2,32 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/api.ts",
+      "src": "dist/index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "methods": ["OPTIONS"],
-      "status": 204,
-      "headers": {
-        "Access-Control-Allow-Origin": "https://assignment-gudz-53s7.vercel.app",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Access-Control-Allow-Credentials": "true"
-      }
-    },
-    {
       "src": "/(.*)",
-      "dest": "src/api.ts",
-      "headers": {
-        "Access-Control-Allow-Origin": "https://assignment-gudz-53s7.vercel.app",
-        "Access-Control-Allow-Credentials": "true"
-      }
+      "dest": "dist/index.js"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
