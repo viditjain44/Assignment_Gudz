@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
+import technicianRoutes from "./routes/technician.route.js"
 import routes from "./routes/index.js";
 
 const app = express();
@@ -79,7 +80,7 @@ app.use("/api/auth", (req, res, next) => {
 
 // API routes (technicians, bookings, users)
 app.use("/api", routes);
-
+app.use("/api/technicians", technicianRoutes);
 // Global error handler
 app.use((err: any, req: any, res: any, next: any) => {
   console.error("[App] Error:", err);
