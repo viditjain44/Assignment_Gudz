@@ -148,9 +148,17 @@ app.use(
 
 app.use(express.json());
 
-// 🔥 Mount better-auth WITHOUT prefix
-if (auth) {
-  app.use(auth);
-}
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// Mount better-auth
+app.use("/api/auth", auth.handler);
+
+// Test route
+app.get("/", (req, res) => {
+  res.json({ message: "API is running", version: "1.0.0" });
+});
 
 export default app;
