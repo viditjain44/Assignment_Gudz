@@ -127,6 +127,7 @@ const trustedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "http://localhost:5000",
+  "https://assignment-gudz-53s7.vercel.app",
   process.env.FRONTEND_URL,
   BASE_URL,
 ].filter((origin): origin is string => Boolean(origin));
