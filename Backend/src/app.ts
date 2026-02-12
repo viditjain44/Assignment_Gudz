@@ -20,8 +20,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Handle preflight for all routes
-app.options("*", cors(corsOptions));
+// Handle preflight for all routes (removed wildcard - cors middleware handles this)
 
 app.use(express.json());
 
@@ -50,7 +49,7 @@ app.get("/", (req, res) => {
 // ✅ Proper Better Auth mounting with manual CORS (toNodeHandler bypasses Express middleware)
 const authHandler = toNodeHandler(auth);
 
-app.all("/api/auth/*", (req, res, next) => {
+app.all("/api/auth/:path(*)", (req, res, next) => {
   // Set CORS headers manually for auth routes
   const origin = req.headers.origin;
   const allowedOrigins = [
