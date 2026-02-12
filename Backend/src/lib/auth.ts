@@ -8,12 +8,21 @@ const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET;
 const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL;
 
 if (!MONGODB_URI) {
-  throw new Error("❌ MONGODB_URI environment variable is not set");
+  console.error("❌ MONGODB_URI environment variable is not set");
+  throw new Error("MONGODB_URI is required");
 }
 
 if (!BETTER_AUTH_SECRET) {
-  throw new Error("❌ BETTER_AUTH_SECRET environment variable is not set");
+  console.error("❌ BETTER_AUTH_SECRET environment variable is not set");
+  throw new Error("BETTER_AUTH_SECRET is required");
 }
+
+if (!BETTER_AUTH_URL) {
+  console.error("❌ BETTER_AUTH_URL environment variable is not set");
+  throw new Error("BETTER_AUTH_URL is required");
+}
+
+console.log('[Auth] Initializing with baseURL:', BETTER_AUTH_URL);
 
 // Single MongoDB client for better-auth (lazy connection)
 const mongoClient = new MongoClient(MONGODB_URI, {
@@ -26,7 +35,7 @@ const mongoClient = new MongoClient(MONGODB_URI, {
 // Create auth instance
 export const auth = betterAuth({
   secret: BETTER_AUTH_SECRET,
-  baseURL: BETTER_AUTH_URL || "http://localhost:5000",
+  baseURL: BETTER_AUTH_URL, // This MUST be the full URL
   basePath: "/api/auth",
   
   trustedOrigins: [
@@ -70,5 +79,4 @@ export const auth = betterAuth({
 
 console.log('✅ Better Auth initialized');
 
-// Export the client for connection testing if needed
 export { mongoClient };
