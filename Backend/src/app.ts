@@ -135,8 +135,7 @@
 // };
 import express from "express";
 import cors from "cors";
-import authRoutes from "./routes/auth.route.js";
-// other routes...
+import { auth } from "./lib/auth.js";
 
 const app = express();
 
@@ -149,7 +148,9 @@ app.use(
 
 app.use(express.json());
 
-app.use("/api/auth", authRoutes);
-// other routes...
+// 🔥 Mount better-auth WITHOUT prefix
+if (auth) {
+  app.use(auth);
+}
 
 export default app;
