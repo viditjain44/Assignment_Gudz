@@ -24,10 +24,10 @@ async function apiRequest<T>(
   }
 
   // 🔥 Route auth separately
-  const isAuthRoute = endpoint.startsWith('/auth')
+  const isAuthRoute = endpoint.startsWith('/api/auth')
 
   const url = isAuthRoute
-    ? `${API_URL}${endpoint}`       // → /auth/*
+    ? `${API_URL}${endpoint}`       // → /api/auth/*
     : `${API_URL}/api${endpoint}`   // → /api/*
 
   const response = await fetch(url, config)

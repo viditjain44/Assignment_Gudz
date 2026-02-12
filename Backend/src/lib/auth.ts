@@ -136,6 +136,7 @@ const trustedOrigins = [
 export const auth = betterAuth({
   secret: BETTER_AUTH_SECRET,
   baseURL: BASE_URL,
+  basePath: "/api/auth",
   trustedOrigins,
   database: mongodbAdapter(mongoClient.db("technician-booking")),
 

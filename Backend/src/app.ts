@@ -36,8 +36,8 @@ app.get("/", (req, res) => {
   res.json({ message: "API is running", version: "1.0.0" });
 });
 
-// ✅ Proper Better Auth mounting
-app.use("/auth", toNodeHandler(auth));
+// ✅ Proper Better Auth mounting (must use /api/auth/* for better-auth default)
+app.all("/api/auth/*", toNodeHandler(auth));
 
 // Global error handler
 app.use((err: any, req: any, res: any, next: any) => {
