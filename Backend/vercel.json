@@ -8,7 +8,22 @@
   ],
   "routes": [
     {
+      "src": "/api/auth/(.*)",
+      "methods": ["OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "https://assignment-gudz-53s7.vercel.app",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Credentials": "true"
+      },
+      "dest": "src/index.ts"
+    },
+    {
       "src": "/(.*)",
+      "headers": {
+        "Access-Control-Allow-Origin": "https://assignment-gudz-53s7.vercel.app",
+        "Access-Control-Allow-Credentials": "true"
+      },
       "dest": "src/index.ts"
     }
   ]
