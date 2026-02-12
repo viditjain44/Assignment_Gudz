@@ -5,7 +5,10 @@ interface ApiOptions {
   body?: unknown
 }
 
-async function apiRequest<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
+async function apiRequest<T>(
+  endpoint: string,
+  options: ApiOptions = {}
+): Promise<T> {
   const { method = 'GET', body } = options
 
   const config: RequestInit = {
@@ -20,17 +23,30 @@ async function apiRequest<T>(endpoint: string, options: ApiOptions = {}): Promis
     config.body = JSON.stringify(body)
   }
 
-  const response = await fetch(`${API_URL}/api${endpoint}`, config)
+  // 🔥 Route auth separately
+  const isAuthRoute = endpoint.startsWith('/auth')
+
+  const url = isAuthRoute
+    ? `${API_URL}${endpoint}`       // → /auth/*
+    : `${API_URL}/api${endpoint}`   // → /api/*
+
+  const response = await fetch(url, config)
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'An error occurred' }))
+    const error = await response
+      .json()
+      .catch(() => ({ message: 'An error occurred' }))
+
     throw new Error(error.message || 'An error occurred')
   }
 
   return response.json()
 }
 
-// Types
+/* =======================
+   TYPES
+======================= */
+
 export interface Technician {
   _id: string
   name: string
@@ -64,50 +80,101 @@ export interface User {
   updatedAt: string
 }
 
-// Technician API
+/* =======================
+   TECHNICIAN API
+======================= */
+
 export const technicianApi = {
   getAll: (params?: { skill?: string; rating?: number; search?: string }) => {
     const searchParams = new URLSearchParams()
-    if (params?.skill && params.skill !== 'all') searchParams.append('skill', params.skill)
-    if (params?.rating) searchParams.append('rating', params.rating.toString())
-    if (params?.search) searchParams.append('search', params.search)
-    
+    if (params?.skill && params.skill !== 'all')
+      searchParams.append('skill', params.skill)
+    if (params?.rating)
+      searchParams.append('rating', params.rating.toString())
+    if (params?.search)
+      searchParams.append('search', params.search)
+
     const query = searchParams.toString()
-    return apiRequest<Technician[]>(`/technicians${query ? `?${query}` : ''}`)
+
+    return apiRequest<Technician[]>(
+      `/technicians${query ? `?${query}` : ''}`
+    )
   },
-  
-  getById: (id: string) => apiRequest<Technician>(`/technicians/${id}`),
-  
+
+  getById: (id: string) =>
+    apiRequest<Technician>(`/technicians/${id}`),
+
   create: (data: Omit<Technician, '_id' | 'createdAt' | 'updatedAt'>) =>
-    apiRequest<Technician>('/technicians', { method: 'POST', body: data }),
-  
-  register: (data: { name: string; email: string; phone?: string; skill: string; bio?: string; hourlyRate?: number }) =>
-    apiRequest<Technician>('/technicians', { method: 'POST', body: data }),
+    apiRequest<Technician>('/technicians', {
+      method: 'POST',
+      body: data,
+    }),
+
+  register: (data: {
+    name: string
+    email: string
+    phone?: string
+    skill: string
+    bio?: string
+    hourlyRate?: number
+  }) =>
+    apiRequest<Technician>('/technicians', {
+      method: 'POST',
+      body: data,
+    }),
 }
 
-// Booking API
+/* =======================
+   BOOKING API
+======================= */
+
 export const bookingApi = {
   getUserBookings: (status?: string) => {
-    const query = status && status !== 'all' ? `?status=${status}` : ''
+    const query =
+      status && status !== 'all' ? `?status=${status}` : ''
+
     return apiRequest<Booking[]>(`/bookings/user${query}`)
   },
-  
-  getUpcoming: () => apiRequest<Booking[]>('/bookings/upcoming'),
-  
-  create: (data: { technicianId: string; slot: string; notes?: string }) =>
-    apiRequest<Booking>('/bookings', { method: 'POST', body: data }),
-  
+
+  getUpcoming: () =>
+    apiRequest<Booking[]>('/bookings/upcoming'),
+
+  create: (data: {
+    technicianId: string
+    slot: string
+    notes?: string
+  }) =>
+    apiRequest<Booking>('/bookings', {
+      method: 'POST',
+      body: data,
+    }),
+
   cancel: (id: string) =>
-    apiRequest<Booking>(`/bookings/${id}`, { method: 'DELETE' }),
-  
+    apiRequest<Booking>(`/bookings/${id}`, {
+      method: 'DELETE',
+    }),
+
   reschedule: (id: string, newSlot: string) =>
-    apiRequest<Booking>(`/bookings/${id}/reschedule`, { method: 'PUT', body: { newSlot } }),
+    apiRequest<Booking>(`/bookings/${id}/reschedule`, {
+      method: 'PUT',
+      body: { newSlot },
+    }),
 }
 
-// User API
+/* =======================
+   USER API
+======================= */
+
 export const userApi = {
-  getProfile: () => apiRequest<User>('/users/profile'),
-  
+  getProfile: () =>
+    apiRequest<User>('/users/profile'),
+
   updateProfile: (data: { name: string }) =>
-    apiRequest<{ message: string; user: User }>('/users/profile', { method: 'PUT', body: data }),
+    apiRequest<{ message: string; user: User }>(
+      '/users/profile',
+      {
+        method: 'PUT',
+        body: data,
+      }
+    ),
 }
